@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted File</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #111; color: #fff; font-family: 'Courier New', Courier, monospace; overflow: hidden; user-select: none; }
+        
+        /* The initial bait screen */
+        #bait-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: radial-gradient(circle, #222, #000); }
+        #bait-screen h1 { color: #888; font-size: 24px; letter-spacing: 2px; }
+        #trap-button { padding: 20px 40px; font-size: 20px; background: #8a0303; color: #fff; border: 2px solid #ff0000; cursor: pointer; border-radius: 10px; box-shadow: 0 0 15px #ff0000; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
+        #trap-button:active { transform: scale(0.95); }
+
+        /* The Hologram */
+        #hologram-container { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; opacity: 0; transition: opacity 2s ease-in; perspective: 800px; }
+        
+        .holo-core { width: 90px; height: 90px; background: radial-gradient(circle, #fff, #ff0000 30%, #4a0000 70%, transparent); border-radius: 50%; box-shadow: 0 0 60px #ff0000, inset 0 0 20px #fff; animation: glitch 0.2s infinite, float 3s ease-in-out infinite; margin: 0 auto; position: relative; z-index: 2; }
+        .holo-ring { width: 140px; height: 140px; border: 3px solid rgba(255, 0, 0, 0.6); border-radius: 50%; position: absolute; top: -25px; left: -25px; box-shadow: 0 0 20px #ff0000; animation: spin 2s linear infinite; transform: rotateX(70deg) rotateY(20deg); z-index: 1; }
+        .holo-ring2 { width: 180px; height: 180px; border: 1px dashed rgba(255, 0, 0, 0.4); border-radius: 50%; position: absolute; top: -45px; left: -45px; animation: spinReverse 4s linear infinite; transform: rotateX(70deg); }
+              #dialogue { font-size: 22px; text-shadow: 0 0 8px #ff0000; max-width: 90%; margin: 40px auto 0; line-height: 1.5; min-height: 100px; color: #ffcccc; }
+        #blood-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 10%, #5a0000 80%, #000); opacity: 0; pointer-events: none; transition: opacity 2s ease-in; z-index: 10; mix-blend-mode: multiply; }
+        
+        /* The fake crashed phone screen */
+        #fatal-error { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; color: red; font-size: 30px; text-align: center; padding-top: 40%; z-index: 20; font-weight: bold; text-shadow: 0 0 10px red; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes spin { 100% { transform: rotateX(70deg) rotateZ(360deg); } }
+        @keyframes spinReverse { 100% { transform: rotateX(70deg) rotateZ(-360deg); } }
+        @keyframes glitch { 0% { transform: translate(0) } 20% { transform: translate(-2px, 1px) } 40% { transform: translate(-1px, -2px) } 60% { transform: translate(2px, 1px) } 80% { transform: translate(1px, -1px) } 100% { transform: translate(0) } }
+        
+        .shake { animation: shake 0.1s infinite; }
+        @keyframes shake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-3px, -2px); } 50% { transform: translate(3px, 0px); } 75% { transform: translate(-2px, 3px); } 100% { transform: translate(1px, -1px); } }
+    </style>
+</head>
+<body>
+      <div id="bait-screen">
+        <h1>[ ENCRYPTED MESSAGE ]</h1>
+        <button id="trap-button">DECRYPT FILE</button>
+    </div>
+
+    <div id="hologram-container">
+        <div class="holo-core">
+            <div class="holo-ring"></div>
+            <div class="holo-ring2"></div>
+        </div>
+        <div id="dialogue"></div>
+    </div>
+
+    <div id="blood-screen"></div>
+    <div id="fatal-error">SYSTEM DESTROYED<br><span style="font-size:16px;">CONNECTION TERMINATED</span></div>
+
+    <script>
+        const baitScreen = document.getElementById('bait-screen');
+        const trapButton = document.getElementById('trap-button');
+        const hologramContainer = document.getElementById('hologram-container');
+        const dialogueBox = document.getElementById('dialogue');
+        const bloodScreen = document.getElementById('blood-screen');
+        const fatalError = document.getElementById('fatal-error');
+        
+        // Scary ambient and loud scream sounds
+        const ambientAudio = new Audio('https://cdn.pixabay.com/download/audio/2022/11/06/audio_2bb61cdafb.mp3?filename=dark-ambient-horror-cinematic-halloween-atmosphere-124473.mp3'); 
+        const loudScreamAudio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_7dd76657c9.mp3?filename=scary-scream-114686.mp3'); 
+        ambientAudio.loop = true;
+      
