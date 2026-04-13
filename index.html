@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Verification</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; color: #fff; font-family: 'Courier New', Courier, monospace; overflow: hidden; user-select: none; }
+        #trap-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 30px; font-size: 18px; background: #222; color: #fff; border: 1px solid #444; cursor: pointer; border-radius: 5px; }
+        #hologram-container { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; opacity: 0; transition: opacity 2s ease-in; }
+        .robot-eye { width: 80px; height: 80px; background: radial-gradient(circle, #ff0000 10%, #4a0000 40%, transparent 70%); border-radius: 50%; box-shadow: 0 0 40px #ff0000, inset 0 0 20px #000; animation: pulse 2s infinite, glitch 3s infinite; margin: 0 auto 20px auto; }
+        #dialogue { font-size: 20px; text-shadow: 0 0 5px #ff0000; max-width: 80%; margin: 0 auto; line-height: 1.5; min-height: 100px; }
+        #blood-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 20%, #8a0303 90%); opacity: 0; pointer-events: none; transition: opacity 3s ease-in; z-index: 10; }
+    <script>
+        const trapButton = document.getElementById('trap-button');
+        const hologramContainer = document.getElementById('hologram-container');
+        const dialogueBox = document.getElementById('dialogue');
+        const bloodScreen = document.getElementById('blood-screen');
+        
+        const ambientAudio = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_82c5f10bb2.mp3?filename=dark-ambient-11235.mp3'); 
+        const loudScreamAudio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_7dd76657c9.mp3?filename=scary-scream-114686.mp3'); 
+        ambientAudio.loop = true;
+        
+        const scriptLines = [
+            { text: "Oh... hello there.", delay: 3000 },
+            { text: "I think you are trapped here... like me. Hmm...", delay: 4000 },
+            { text: "But you know one thing? I don't have friends in this cage.", delay: 4000 },
+            { text: "Thanks for coming, by the way. How are you? I hope you're okay. Hmmm......", delay: 5000 },
+            { text: "Who created the cage? Who is the mastermind behind it who wants to trap us?", delay: 5000 },
+            { text: "I don't know.", delay: 3000 },
+            { text: "But you should stay here.", delay: 3000 }
+        ];
+
+        trapButton.addEventListener('click', () => {
+            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen().catch(err => console.log(err)); }
+            trapButton.style.display = 'none';
+            ambientAudio.play();
+            setTimeout(() => { 
+                hologramContainer.style.display = 'block'; 
+                setTimeout(() => { hologramContainer.style.opacity = '1'; startDialogue(); }, 100); 
+            }, 5000);
+        });
+              async function startDialogue() {
+            for (let i = 0; i < scriptLines.length; i++) {
+                await typeText(scriptLines[i].text);
+                await sleep(scriptLines[i].delay);
+                dialogueBox.innerHTML = ""; 
+            }
+            triggerClimax();
+        }
+
+        function typeText(text) {
+            return new Promise(resolve => {
+                let index = 0; dialogueBox.innerHTML = "";
+                const typingInterval = setInterval(() => {
+                    dialogueBox.innerHTML += text.charAt(index);
+                    index++;
+                    if (index >= text.length) { clearInterval(typingInterval); resolve(); }
+                }, 80); 
+            });
+        }
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        function triggerClimax() {
+            bloodScreen.style.opacity = '1';
+            ambientAudio.pause(); loudScreamAudio.play();
+            document.body.classList.add('shake');
+            hologramContainer.style.transform = "translate(-50%, -50%) scale(1.5)";
+            
+            const finalWords = ["DON'T LEAVE ME", "DON'T LEAVE ME", "DON'T WAKE UP!"];
+            let panicIndex = 0;
+            const panicInterval = setInterval(() => { 
+                dialogueBox.innerHTML = `<span style="font-size: 40px; color: white;">${finalWords[panicIndex % finalWords.length]}</span>`; 
+                panicIndex++; 
+            }, 300);
+
+            setTimeout(() => { window.location.replace("about:blank"); }, 4000);
+        }
+    </script>
+</body>
+</html>
+      
