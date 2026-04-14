@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Heart Animation</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #050005; /* Deep dark background */
+        }
+        #canvas-container { 
+            width: 100vw; 
+            height: 100vh; 
+        }
+        .text {
+            position: absolute;
+            top: 15%;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="text">this is for you</div>
+    <div id="canvas-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const container = document.getElementById('canvas-container');
+        
+        // 1. Setup Scene, Camera, and Renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 40;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // 2. Setup Heart Particles
+        const count = 4000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3);
+        
+        // Arrays seen in the video snippet
+        const scales = new Float32Array(count);
+        const randoms = new Float32Array(count);
+        const randoms1 = new Float32Array(count);
+        const speeds = new Float32Array(count);
+
+        const colorChoices = ['#ff4757', '#ff6b81', '#ffc0cb', '#ffffff'];
+        const parameters = { max: 0.02 };
+
+        // THE EXACT LOOP FROM THE VIDEO
+        for (let i = 0; i < count; i++) {
+            const phi = Math.random() * Math.PI * 2;
+            const i3 = 3 * i;
+            
+            randoms[i] = Math.random();
+            randoms1[i] = Math.random();
+            scales[i] = Math.random() * 0.35;
+            
+            const colorIndex = Math.floor(Math.random() * colorChoices.length);
+            const color = new THREE.Color(colorChoices[colorIndex]);
+            
+            colors[i3 + 0] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
+            
+            speeds[i] = Math.random() * parameters.max;
+
+            // Parametric Math Equation to shape the particles like a heart
+            const t = Math.random() * Math.PI * 2;
+            const r = (Math.random() * 0.5 + 0.5); // Spread 
+            
+            const x = 16 * Math.pow(Math.sin(t), 3) * r;
+            const y = (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * r;
+            const z = (Math.random() - 0.5) * 10;
+            
+            positions[i3 + 0] = x;
+            positions[i3 + 1] = y;
+            positions[i3 + 2] = z;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        // Create the particle material with Additive Blending for a glow effect
+        const material = new THREE.PointsMaterial({
+            size: 0.4,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            depthWrite: false
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        // 3. Create the Inner 3D Crystal Heart
+        // We use an Octahedron to simulate the low-poly 3D gem seen rotating in the center
+        const crystalGeometry = new THREE.OctahedronGeometry(4, 0);
+        const crystalMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff4757,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.8
+        });
+        const crystal = new THREE.Mesh(crystalGeometry, crystalMaterial);
+        
+        // Flatten the geometry slightly to look more like a heart gem
+        crystal.scale.set(1.2, 1, 0.8); 
+        scene.add(crystal);
+
+        // 4. Animation Loop
+        const clock = new THREE.Clock();
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            // Rotate the outer particle heart slowly
+            particles.rotation.y = elapsedTime * 0.1;
+            particles.rotation.z = Math.sin(elapsedTime * 0.5) * 0.1; // Gentle sway
+
+            // Rotate the inner crystal fast
+            crystal.rotation.x = elapsedTime;
+            crystal.rotation.y = elapsedTime * 1.5;
+
+            // Pulse the crystal like a heartbeat
+            const heartbeat = Math.sin(elapsedTime * 4) * 0.1 + 1;
+            crystal.scale.set(1.2 * heartbeat, 1 * heartbeat, 0.8 * heartbeat);
+
+            renderer.render(scene, camera);
+        };
+
+        // Make it responsive to window resizes
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+  </html>
+  
