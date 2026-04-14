@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Romisaa's Universe: The Ultimate Masterpiece 🌌❤️</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body { overflow: hidden; background: #000; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; position: absolute; inset: 0; touch-action: none; perspective: 2000px; transform-style: preserve-3d; }
+  
+  #spider-canvas { position: absolute; inset: 0; z-index: -4; display: block; }
+  .screen { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; z-index: 10; opacity: 0; }
+  .ui-box { background: rgba(5, 10, 20, 0.65); padding: 30px; border-radius: 30px; text-align: center; border: 1px solid rgba(0, 245, 212, 0.3); backdrop-filter: blur(25px); box-shadow: 0 30px 60px rgba(0,0,0,0.9); width: 90%; max-width: 420px; }
+  .btn { padding: 15px 25px; font-size: 16px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); font-weight: 900; cursor: pointer; margin: 10px; transition: 0.2s; text-transform: uppercase; }
+  .btn-primary { background: linear-gradient(135deg, #ff0055, #a80038); color: white; box-shadow: 0 10px 30px rgba(255, 0, 85, 0.5); }
+  
+  #intro { position: absolute; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; background: #000; }
+  .nf-letter { font-size: 14vw; font-weight: 900; color: #e50914; opacity: 0; transform: scale(3); filter: blur(20px); text-shadow: 0 0 60px rgba(229,9,20,1); }
+  .fingerprint-btn { width: 120px; height: 140px; margin: 20px auto; border-radius: 20px; border: 3px solid #00f5d4; background: rgba(0, 245, 212, 0.1); display: flex; align-items: center; justify-content: center; font-size: 60px; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(0,245,212,0.3); }
+  .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: #fff; box-shadow: 0 0 20px #fff, 0 0 40px #00f5d4; opacity: 0; z-index: 5; }
+
+  .meter-container { width: 100%; height: 40px; background: #222; border-radius: 20px; margin: 20px 0; border: 3px solid #ff0055; overflow: hidden; }
+  #meter-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff0055, #ff758c); transition: width 0.1s; }
+  
+  .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; perspective: 1000px; }
+  .mem-card { width: 65px; height: 65px; position: relative; transform-style: preserve-3d; cursor: pointer; }
+  .mem-front, .mem-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
+  .mem-back { background: linear-gradient(135deg, #00f5d4, #0077b6); transform: rotateY(180deg); border: 2px solid #fff; }
+  .mem-front { background: rgba(0,0,0,0.8); border: 2px solid #ff0055; color: #ff0055; font-size: 24px; font-weight: 900; }
+
+  .cute-bot { transition: transform 0.2s; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.8)); }
+  .bot-jump { animation: jumpHappy 0.4s ease infinite alternate; }
+  .bot-cry { animation: shakeSad 0.1s infinite; filter: grayscale(50%); }
+  @keyframes jumpHappy { 0% { transform: translateY(0); } 100% { transform: translateY(-20px) scale(1.1); } }
+  @keyframes shakeSad { 0% { transform: translateX(-4px); } 100% { transform: translateX(4px); } }
+
+  .book-container { perspective: 3500px; margin-top: 20px; display: flex; justify-content: center; width: 100%; height: 100%; align-items: center; }
+  .book { width: 330px; height: 480px; position: relative; transform-style: preserve-3d; transform: rotateX(15deg) rotateY(-10deg) translateZ(30px); box-shadow: 40px 40px 80px rgba(0,0,0,0.9); }
+  .book::before { content: ''; position: absolute; left: -20px; top: 2px; bottom: -2px; width: 20px; background: linear-gradient(to right, #1a0008, #3a0018); transform-origin: right; transform: rotateY(-90deg); border-radius: 8px 0 0 8px; }
+  .page { position: absolute; width: 100%; height: 100%; top: 0; right: 0; background: linear-gradient(to right, #e8dcc4 0%, #fffcf2 15%, #fffcf2 100%); transform-origin: left; transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1); border-radius: 5px 20px 20px 5px; padding: 45px 35px; font-size: 22px; color: #2c1e1e; font-style: italic; border: 1px solid #c4b498; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: 700; cursor:pointer;}
+  .page.flipped { transform: rotateY(-178deg) translateZ(2px); box-shadow: inset -20px 0 30px rgba(0,0,0,0.15); }
+  .cover { background: linear-gradient(135deg, #2a0012, #590d22); color: #ffd700; font-weight: 900; font-size: 42px; border-left: 25px solid #110005; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  .speech-bubble { position: absolute; background: #fff; color: #111; padding: 15px 20px; border-radius: 20px; font-size: 15px; font-weight: 900; opacity: 0; box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 100; max-width: 190px; text-align: center; border: 3px solid #ccc; pointer-events: none; }
+  .speech-bubble::after { content: ''; position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); border-width: 16px 16px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+
+  #wishing-sky { position: absolute; inset: 0; z-index: 500; display: none; background: radial-gradient(circle at bottom, #0a001a 0%, #000 100%); cursor: pointer; overflow: hidden; }
+  #wish-prompt { position: absolute; top: 40%; width: 100%; text-align: center; color: #fff; font-size: 28px; font-style: italic; opacity: 0; pointer-events: none; z-index: 510;}
+  .sky-lantern { position: absolute; background: linear-gradient(to top, rgba(255, 100, 0, 0.9), rgba(255, 200, 0, 0.9)); border-radius: 15px 15px 8px 8px; box-shadow: 0 0 40px gold; display: flex; align-items: center; justify-content: center; padding: 15px; text-align: center; color: #fff; font-weight: 900; font-size: 16px; animation: floatWish 12s ease-in forwards; width: 150px; height: 150px; z-index: 505;}
+  @keyframes floatWish { 0% { transform: translateY(100px) scale(0.5); opacity: 0; } 10% { opacity: 1; transform: translateY(-50px) scale(1); } 100% { transform: translateY(-120vh) scale(0.6); opacity: 0; } }
+  
+  .ticket-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: 85%; max-width: 380px; height: 500px; z-index: 9999; display: none; }
+  .ticket-content { position: absolute; inset: 0; background: linear-gradient(135deg, #ffd700, #b8860b, #ffd700); border-radius: 25px; padding: 30px; text-align: center; border: 4px dashed #fff; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #scratch-canvas { position: absolute; inset: 0; z-index: 10; border-radius: 25px; cursor: crosshair; touch-action: none; }
+  #screen-credits { background: transparent; overflow: hidden; pointer-events: none; display: none; }
+  #credits-text { position: absolute; top: 105%; width: 100%; text-align: center; color: #ffd700; font-size: 26px; line-height: 3.5; text-shadow: 0 5px 20px #000; white-space: pre-line; z-index: 600; font-weight: 900; }
+  .credits-scroll { animation: scrollUp 50s linear forwards; display: block !important; }
+  @keyframes scrollUp { to { top: -250%; } }
+</style>
+</head>
+<body>
+<canvas id="spider-canvas"></canvas>
+<div id="screen-password" class="screen" style="display:flex; opacity:1;">
+  <div class="ui-box">
+    <h2 style="color:#00f5d4; letter-spacing:3px;">BIOMETRIC LOCK 🔐</h2>
+    <p style="color:#aaa; font-size:16px; margin-top:10px;">Hold thumb on scanner to verify Queen Romisaa 👑</p>
+    <div class="fingerprint-btn" id="finger-btn">👆<div class="scan-line" id="scan-line"></div></div>
+    <div class="meter-container" style="height:20px; border:2px solid #00f5d4; background:#000; margin-top:15px;"><div id="scan-fill" style="width:0%; height:100%; background:#00f5d4; box-shadow:0 0 15px #00f5d4; transition:0.1s;"></div></div>
+    <p id="pass-error" style="color:#00f5d4; margin-top:15px; font-weight:900; font-size:18px;">AWAITING SCAN... 📡</p>
+  </div>
+</div>
+
+<div id="intro"><div class="nf-letter">R</div><div class="nf-letter">O</div><div class="nf-letter">M</div><div class="nf-letter">I</div><div class="nf-letter">S</div><div class="nf-letter">A</div><div class="nf-letter">A</div></div>
+
+<div id="screen-mash" class="screen"><div class="ui-box"><h2 style="color:#ff0055; font-size:30px;">POWER THE CORE! 🔋</h2><p style="color:#e0e0e0; font-size:15px; margin-top:10px;">Mash the button 30 times to start the engine! ⚡</p><div class="meter-container"><div id="meter-fill"></div></div><button class="btn btn-primary" style="width:100%; font-size:22px; padding:20px;" onclick="mashClick()">SEND LOVE ❤️</button></div></div>
+
+<div id="screen-memory" class="screen"><div class="ui-box"><h2 style="color:#00f5d4; font-size:28px;">MEMORY MATCH 💭</h2><div class="memory-grid" id="mem-grid"></div></div></div>
+
+<div id="screen-quiz" class="screen"><div class="ui-box" style="max-width: 450px;"><h2 style="color:#ffd700; font-size:28px;">THE ROMISAA TEST 💖</h2><p id="quiz-counter" style="color:#aaa; font-weight:bold;">Question 1 of 12</p>
+  <div style="display:flex; justify-content:center; gap:35px; margin:20px 0;">
+    <svg class="cute-bot" id="quiz-bot-1" viewBox="0 0 120 150" width="75"><rect x="25" y="20" width="70" height="50" rx="15" fill="#00b4d8" stroke="#fff" stroke-width="2"/><text id="quiz-face-1" x="60" y="52" fill="#000" font-size="20" font-weight="900" text-anchor="middle">O_O</text><rect x="25" y="75" width="70" height="55" rx="10" fill="#00b4d8"/></svg>
+    <svg class="cute-bot" id="quiz-bot-2" viewBox="0 0 120 150" width="75"><rect x="25" y="20" width="70" height="50" rx="15" fill="#ff0055" stroke="#fff" stroke-width="2"/><text id="quiz-face-2" x="60" y="52" fill="#000" font-size="20" font-weight="900" text-anchor="middle">O_O</text><rect x="25" y="75" width="70" height="55" rx="10" fill="#ff0055"/></svg>
+  </div>
+  <h3 id="quiz-question" style="font-size:20px; margin-bottom:15px;">Loading...</h3>
+  <button class="btn btn-primary" id="btn-opt1" onclick="answerQuiz(1)" style="width:100%;"></button><button class="btn btn-primary" id="btn-opt2" onclick="answerQuiz(2)" style="width:100%;"></button>
+  <p id="quiz-feedback" style="color:#00f5d4; font-weight:bold; height:25px; margin-top:10px;"></p>
+</div></div>
+
+<div id="screen-glitch" class="screen"><div class="ui-box" style="max-width:550px;"><h2 style="color:#ff0055; font-weight:900; font-size:32px;">CONNECTION LOST ⚡</h2><div style="position:relative; height:260px; width:100%; overflow:hidden; margin-top:20px;"><div style="position:absolute; left:50%; transform:translateX(-50%); top:110px; z-index:10;"><svg viewBox="0 0 120 70" width="130"><rect x="10" y="35" width="100" height="30" rx="8" fill="#555"/><circle id="r-light" cx="100" cy="50" r="6" fill="#ff0055"/></svg></div><div id="repair-clumsy" style="position:absolute; left:-120px; top:70px; z-index:5;"><div class="speech-bubble" id="repair-bubble-clumsy" style="top:-70px; width:140px; opacity:1;"></div><svg viewBox="0 0 160 200" width="140"><path d="M 45 65 L 115 65 L 105 135 L 55 135 Z" fill="#ffb703"/><rect x="45" y="10" width="70" height="50" rx="12" fill="#ffb703"/><text id="repair-face-clumsy" x="80" y="42" fill="#fff" font-size="16" font-weight="900" text-anchor="middle">O_O</text></svg></div><div id="repair-main" style="position:absolute; right:-120px; top:70px; z-index:15;"><div class="speech-bubble" id="repair-bubble-main" style="top:-70px; width:150px; opacity:1;"></div><svg viewBox="0 0 160 200" width="140"><path d="M 45 65 L 115 65 L 105 135 L 55 135 Z" fill="#adb5bd"/><rect x="45" y="10" width="70" height="50" rx="12" fill="#adb5bd"/><text id="repair-face-main" x="80" y="42" fill="#00f5d4" font-size="16" font-weight="900" text-anchor="middle">^_^</text></svg></div></div><p id="glitch-text" style="font-weight:900; font-size:20px;">System Failure... ⏳</p></div></div>
+
+<div id="screen-galaxy" class="screen" style="z-index:9; pointer-events:none;"><canvas id="galaxy-canvas" style="position:absolute; width:100%; height:100%;"></canvas></div>
+
+<div id="screen-diary" class="screen" style="z-index:10;"><div class="book-container"><div class="book" id="diary-book"></div></div></div>
+<div id="screen-hearts" class="screen" style="z-index:11;"><canvas id="heart-canvas" style="position:absolute; width:100%; height:100%;"></canvas></div>
+
+<div id="screen-finale" class="screen">
+  <canvas id="finale-canvas" style="position:absolute; inset:0; width:100%; height:100%; z-index:1;"></canvas>
+  <div id="finale-stage" style="width:100vw; height:100vh; position:relative; overflow:hidden; z-index:2; pointer-events:none;">
+    <div id="love-text" style="position:absolute; top:18%; width:100%; text-align:center; font-size:clamp(40px, 9vw, 70px); color:#ff0055; font-weight:900; text-shadow:0 2px 0 #c9184a, 0 8px 0 #590d22, 0 25px 50px rgba(0,0,0,0.9); right:-250vw;">I LOVE YOU<br>ROMISAA ❤️</div>
+    <div class="speech-bubble" id="bubble-main" style="left:55%; top:25%;"></div>
+    <div class="speech-bubble" id="bubble-clumsy" style="left:15%; top:25%;"></div>
+    <div class="speech-bubble" id="bubble-raj" style="left:50%; top:25%; transform:translateX(-50%);"></div>
+  </div>
+</div>
+
+<div id="wishing-sky" onclick="createWish(event)"><div id="wish-prompt">Tap the sky to make a wish... ✨</div></div>
+<div id="screen-credits" class="screen"><div id="credits-text"></div></div>
+<canvas id="universe-canvas" style="position:absolute; inset:0; width:100%; height:100%; z-index:-4; opacity:0; mix-blend-mode:screen; display:none;"></canvas>
+
+<div class="ticket-container" id="ticket-cont">
+  <div class="ticket-content">
+    <h1 style="font-size:32px; font-weight:900; margin-bottom:15px;">👑 VIP VOUCHER 👑</h1>
+    <p style="font-size:20px; font-weight:bold; margin-bottom:20px;">Valid for exactly:<br><span style="font-size:36px; color:#c9184a; font-weight:900; display:block; margin-top:10px;">3 REAL KISSES 💋</span></p>
+    <div style="margin-top:25px; background:#111; color:#00f5d4; padding:15px; border-radius:15px; font-family:monospace; font-size:18px; letter-spacing:4px;">NO EXPIRATION</div>
+  </div>
+  <canvas id="scratch-canvas"></canvas>
+                                                                                             </div>
+  <script>
+let audioCtx; function initAudio() { if(!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } if(audioCtx.state === 'suspended') audioCtx.resume(); }
+function playSFX(f, d, t='sine', v=0.5) { initAudio(); let o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = t; o.connect(g); g.connect(audioCtx.destination); o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(v, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d); o.start(); o.stop(audioCtx.currentTime + d); }
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.style.opacity = '0'; }); let t = document.getElementById(id); t.style.display = 'flex'; gsap.to(t, { opacity: 1, duration: 1.5 }); }
+
+// --- AUTOMATED SPIDER AI ---
+const sCanvas = document.getElementById("spider-canvas"), sCtx = sCanvas.getContext("2d");
+let sw = window.innerWidth, sh = window.innerHeight;
+const { sin, cos, PI, hypot, min, max } = Math;
+let isSpiderTouched = false, spiderTouchTimer;
+
+function spawnSpider() {
+    const pts = many(333, () => ({ x: rnd(sw), y: rnd(sh), len: 0, r: 0 }));
+    const pts2 = many(9, (i) => ({ x: cos((i / 9) * PI * 2), y: sin((i / 9) * PI * 2) }));
+    let seed = rnd(100), tx = rnd(sw), ty = rnd(sh), x = rnd(sw), y = rnd(sh), kx = rnd(0.5, 0.5), ky = rnd(0.5, 0.5), walkRadius = {x:rnd(50,50), y:rnd(50,50)}, r = sw / rnd(100, 150);
+    return { follow(X,Y) { tx = X; ty = Y; }, tick(t) {
+            // Auto Roam AI
+            if(!isSpiderTouched) { tx += (sw/2 + cos(t*0.5+seed)*sw/3 - tx) * 0.05; ty += (sh/2 + sin(t*0.4+seed)*sh/3 - ty) * 0.05; }
+            x += min(sw/100, ((tx + cos(t*kx+seed)*walkRadius.x) - x)/10); y += min(sw/100, ((ty + sin(t*ky+seed)*walkRadius.y) - y)/10); let i = 0;
+            pts.forEach((pt) => {
+                const len = hypot(pt.x - x, pt.y - y); let R = min(2, sw / len / 5); const inc = len < sw / 10 && (i++) < 8;
+                if (inc) R *= 1.5; pt.r = R; pt.len = max(0, min(pt.len + (inc ? 0.1 : -0.1), 1));
+                pts2.forEach((pt2) => { if (!pt.len) return; drawLine(x + pt2.x * r + (pt.x - (x + pt2.x * r))*pt.len*pt.len, y + pt2.y * r + (pt.y - (y + pt2.y * r))*pt.len*pt.len, x + pt2.x * r, y + pt2.y * r); });
+                sCtx.beginPath(); sCtx.ellipse(pt.x, pt.y, pt.r, pt.r, 0, 0, PI * 2); sCtx.fill();
+            });
+    } };
+}
+const spiders = many(5, spawnSpider); // Added 5 Spiders!
+function updateSpiders(x, y) { isSpiderTouched = true; clearTimeout(spiderTouchTimer); spiderTouchTimer = setTimeout(()=>isSpiderTouched=false, 2000); spiders.forEach(s => s.follow(x, y)); }
+window.addEventListener("pointermove", (e) => updateSpiders(e.clientX, e.clientY));
+window.addEventListener("touchstart", (e) => updateSpiders(e.touches[0].clientX, e.touches[0].clientY));
+window.addEventListener("touchmove", (e) => { e.preventDefault(); updateSpiders(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+
+requestAnimationFrame(function anim(t) {
+    if (sw !== innerWidth || sh !== innerHeight) { sw = sCanvas.width = innerWidth; sh = sCanvas.height = innerHeight; }
+    sCtx.fillStyle = "rgba(0, 0, 0, 0.4)"; sCtx.fillRect(0, 0, sw, sh); sCtx.fillStyle = sCtx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+    spiders.forEach(s => s.tick(t/1000)); requestAnimationFrame(anim);
+});
+function rnd(x=1, dx=0) { return Math.random() * x + dx; }
+function drawLine(x0,y0,x1,y1) {
+    sCtx.beginPath(); sCtx.moveTo(x0, y0);
+    many(100, (i) => { i=(i+1)/100; let X = x0+(x1-x0)*i, Y = y0+(y1-y0)*i, k = (sin(0.3*(X/5+x0)+1.4*101+2.0+2.5*sin(0.4*(Y/5+y0)+-1.3*101+1.0)) + sin(0.2*(Y/5+y0)+1.5*101+2.8+2.3*sin(0.5*(X/5+x0)+-1.2*101+0.5)))*2; sCtx.lineTo(X+k, Y+k); }); sCtx.stroke();
+}
+function many(n, f) { return [...Array(n)].map((_, i) => f(i)); }
+
+// --- SCANNER ---
+const fBtn = document.getElementById('finger-btn'), sFill = document.getElementById('scan-fill'), sLine = document.getElementById('scan-line'), pErr = document.getElementById('pass-error');
+let scanTimer, scanProg = 0;
+fBtn.addEventListener('touchstart', startScan, {passive: false}); fBtn.addEventListener('mousedown', startScan);
+fBtn.addEventListener('touchend', stopScan); fBtn.addEventListener('mouseup', stopScan); fBtn.addEventListener('mouseleave', stopScan);
+function startScan(e) { e.preventDefault(); if(scanProg >= 100) return; initAudio(); gsap.to(sLine, { opacity: 1, top: '100%', duration: 1.5, repeat: -1, yoyo: true }); pErr.innerText = "SCANNING BIOMETRICS... 📡"; pErr.style.color = "#ffb703"; playSFX(200, 0.1, 'sawtooth', 0.1);
+  scanTimer = setInterval(() => { scanProg += 2; sFill.style.width = scanProg + '%'; playSFX(300 + (scanProg*5), 0.05, 'sine', 0.1);
+    if(scanProg >= 100) { clearInterval(scanTimer); pErr.innerText = "MATCH: QUEEN ROMISAA 👑"; pErr.style.color = "#00f5d4"; playSFX(800, 1, 'sine', 0.5);
+      setTimeout(() => { gsap.to('#screen-password', { opacity: 0, duration: 0.8, onComplete: () => { document.getElementById('screen-password').style.display = 'none'; document.getElementById('intro').style.display = 'flex'; playSFX(100, 2.5, 'sawtooth', 0.3);
+          gsap.to('.nf-letter', { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.8, stagger: 0.25, onComplete: () => { gsap.to('#intro', { opacity: 0, duration: 1.5, delay: 2, onComplete: () => { document.getElementById('intro').style.display = 'none'; initMashGame(); }}); }}); }}); }, 1500); } }, 60); 
+}
+function stopScan() { if(scanProg >= 100) return; clearInterval(scanTimer); scanProg = 0; sFill.style.width = '0%'; gsap.killTweensOf(sLine); sLine.style.opacity = 0; sLine.style.top = '0'; pErr.innerText = "SCAN INCOMPLETE. 🛑"; pErr.style.color = "#ff0055"; }
+
+// --- MASH GAME & MEMORY ---
+let mashScore = 0; function initMashGame() { showScreen('screen-mash'); mashScore = 0; document.getElementById('meter-fill').style.width = '0%'; }
+function mashClick() { mashScore++; document.getElementById('meter-fill').style.width = (mashScore / 30) * 100 + '%'; playSFX(400 + mashScore * 15, 0.1, 'sine'); 
+  if(mashScore >= 30) { playSFX(800, 0.6, 'square'); setTimeout(() => { initMemoryGame(); }, 800); } 
+}
+
+const memIcons = ["👑","🍕","😴","🐻","🌹","💍"]; let memCards = [...memIcons, ...memIcons].sort(() => Math.random() - 0.5);
+let flippedCards = [], matchedPairs = 0;
+function initMemoryGame() {
+  showScreen('screen-memory'); const grid = document.getElementById('mem-grid'); grid.innerHTML = ''; flippedCards = []; matchedPairs = 0;
+  memCards.forEach((ic, i) => {
+    let c = document.createElement('div'); c.className = 'mem-card'; c.innerHTML = `<div class="mem-front">?</div><div class="mem-back">${ic}</div>`;
+    c.onclick = () => {
+      if(c.flippedState || flippedCards.length === 2) return;
+      c.flippedState = true; gsap.to(c, { rotationY: 180, duration: 0.4 }); playSFX(500, 0.1); flippedCards.push({c, ic});
+      if(flippedCards.length === 2) {
+        if(flippedCards[0].ic === flippedCards[1].ic) { playSFX(800, 0.3); matchedPairs++; flippedCards = []; if(matchedPairs === 6) setTimeout(initQuiz, 1500); 
+        } else { playSFX(200, 0.2, 'sawtooth'); setTimeout(() => { gsap.to([flippedCards[0].c, flippedCards[1].c], { rotationY: 0, duration: 0.4 }); flippedCards[0].c.flippedState = false; flippedCards[1].c.flippedState = false; flippedCards = []; }, 1000); }
+      }
+    }; grid.appendChild(c); gsap.from(c, { scale: 0, duration: 0.5, delay: i*0.05 });
+  });
+}
+    // --- ROMISAA QUIZ ---
+const qData = [ { q: "Who is the real boss? 🤔", o1: "Raj 😎", o2: "Romisaa 👑", a: 2, c: "We bow to the Queen! 👑" }, { q: "Who falls asleep first? 😴", o1: "Raj 🛌", o2: "Romisaa 🥱", a: 1, c: "Raj is always sleepy! 😂" }, { q: "Who is the better cook? 🍳", o1: "Raj 👨‍🍳", o2: "Romisaa 👩‍🍳", a: 2, c: "Romisaa's food is magic! 🍲" }, { q: "Who is the bigger baby when sick? 🤒", o1: "Raj 🤧", o2: "Romisaa 😷", a: 1, c: "Raj needs hugs! 🥺" }, { q: "Who gives better hugs? 🤗", o1: "Raj 🫂", o2: "Romisaa 🥰", a: 1, c: "Raj gives bear hugs! 🐻" }, { q: "Who has the better smile? 😁", o1: "Raj 😃", o2: "Romisaa 😍", a: 2, c: "Romisaa's smile lights up the world! 🌟" }, { q: "Who is more stubborn? 😤", o1: "Raj 😠", o2: "Romisaa 🤨", a: 2, c: "Romisaa always wins! 😆" }, { q: "Who says sorry first? 🥺", o1: "Raj 🫣", o2: "Romisaa 😶‍🌫️", a: 1, c: "Raj can't stay mad! ❤️" }, { q: "Who stole whose heart first? 💘", o1: "Raj 🏹", o2: "Romisaa 💌", a: 1, c: "Raj fell in love first! 💘" }, { q: "Who loves who more? 💖", o1: "Raj Loves Romisaa", o2: "Romisaa Loves Raj", a: 1, c: "Raj's love is INFINITE! 🌌" }, { q: "Who is the cutest girl ever? 🥰", o1: "Romisaa 🌸", o2: "Also Romisaa 💖", a: 1, c: "TRICK QUESTION! It's Romisaa! 🥰" }, { q: "Who will love the other forever? ♾️", o1: "Raj ❤️", o2: "Romisaa ❤️", a: 1, c: "FOREVER AND ALWAYS! ❤️🔥" } ];
+let qIdx = 0; function initQuiz() { showScreen('screen-quiz'); loadQ(); }
+function loadQ() { document.getElementById('quiz-counter').innerText = `Question ${qIdx + 1} of 12`; document.getElementById('quiz-question').innerText = qData[qIdx].q; document.getElementById('btn-opt1').innerText = qData[qIdx].o1; document.getElementById('btn-opt2').innerText = qData[qIdx].o2; document.getElementById('quiz-feedback').innerText = ""; document.getElementById('quiz-face-1').textContent = "O_O"; document.getElementById('quiz-face-2').textContent = "O_O"; document.getElementById('quiz-bot-1').className = "cute-bot"; document.getElementById('quiz-bot-2').className = "cute-bot"; }
+function answerQuiz(opt) { const f1 = document.getElementById('quiz-face-1'), f2 = document.getElementById('quiz-face-2'), b1 = document.getElementById('quiz-bot-1'), b2 = document.getElementById('quiz-bot-2'); if(opt === qData[qIdx].a || qIdx >= 10) { f1.textContent = "♥_♥"; f2.textContent = "♥_♥"; b1.classList.add('bot-jump'); b2.classList.add('bot-jump'); document.getElementById('quiz-feedback').innerText = qData[qIdx].c; playSFX(600, 0.4, 'sine'); setTimeout(() => { qIdx++; if(qIdx < 12) { loadQ(); } else { showScreen('screen-glitch'); initRepairSkit(); } }, 2000); } else { f1.textContent = "T_T"; f2.textContent = "T_T"; b1.classList.add('bot-cry'); b2.classList.add('bot-cry'); document.getElementById('quiz-feedback').innerText = "WRONG! Try again! 😭"; playSFX(150, 0.5, 'sawtooth'); setTimeout(() => { b1.className = "cute-bot"; b2.className = "cute-bot"; f1.textContent = "O_O"; f2.textContent = "O_O"; document.getElementById('quiz-feedback').innerText = ""; }, 1500); } }
+
+// --- REPAIR SKIT ---
+async function initRepairSkit() {
+  const clumsy = document.getElementById('repair-clumsy'), main = document.getElementById('repair-main'), txt = document.getElementById('glitch-text'), light = document.getElementById('r-light');
+  const rTalk = (id, text, dur) => { return new Promise(res => { const b = document.getElementById(`repair-bubble-${id}`); b.innerText = text; gsap.to(b, { opacity: 1, y: -15, duration: 0.3 }); setTimeout(() => { gsap.to(b, { opacity: 0, y: 0, duration: 0.3, onComplete: res }); }, dur); }); };
+  gsap.to(clumsy, { left: '8%', duration: 1.2, ease: "power2.out" }); document.getElementById('repair-face-clumsy').textContent = "T_T"; gsap.to(clumsy, { x: 8, yoyo: true, repeat: 25, duration: 0.08 }); await rTalk('clumsy', "I broke it!! 😱😭", 2500);
+  gsap.to(main, { right: '8%', duration: 0.9, ease: "power2.out" }); document.getElementById('repair-face-main').textContent = ">_<"; await rTalk('main', "Give me the wrench! 🔧", 2500);
+  txt.innerText = "Attempting Emergency Splice... ⚠️"; document.getElementById('repair-face-clumsy').textContent = "O_O"; document.getElementById('repair-face-main').textContent = "O_O"; gsap.to([clumsy, main], { y: 20, yoyo: true, repeat: 6, duration: 0.25 }); playSFX(150, 0.1, 'square'); setTimeout(() => playSFX(150, 0.1, 'square'), 350); await rTalk('clumsy', "Hurry! Romisaa is waiting! 😰", 2000); await rTalk('main', "Almost got it... ⚡", 2000);
+  light.setAttribute('fill', '#00f5d4'); txt.innerText = "Signal Restored! ✅"; txt.style.color = "#00f5d4"; playSFX(600, 0.8, 'sine'); document.getElementById('repair-face-clumsy').textContent = "^o^"; document.getElementById('repair-face-main').textContent = "^_^"; gsap.to(clumsy, { y: -30, yoyo: true, repeat: 1, duration: 0.25 }); await rTalk('main', "Phew! We did it! 😮‍💨", 2000);
+  gsap.to(clumsy, { left: '-200px', duration: 1.5 }); gsap.to(main, { right: '-200px', duration: 1.5, onComplete: () => { showScreen('screen-galaxy'); initGalaxy(); }});
+}
+
+// --- GALAXY STAGE (Fixed Spin, No Touch) ---
+function initGalaxy() {
+    const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 100);
+    camera.position.set(3, 3, 3); camera.lookAt(0,0,0);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('galaxy-canvas'), alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const params = { count: 100000, size: 0.015, radius: 2.5, branches: 4, spin: 3, rand: 5, rPower: 4, inC: '#ff0055', outC: '#00f5d4' };
+    const geom = new THREE.BufferGeometry(), pos = new Float32Array(params.count * 3), cols = new Float32Array(params.count * 3);
+    const cIn = new THREE.Color(params.inC), cOut = new THREE.Color(params.outC);
+
+    for(let i=0; i<params.count; i++){
+        let i3 = i*3, r = Math.pow(Math.random()*params.rand, Math.random()*params.radius);
+        let sAngle = r*params.spin, bAngle = ((i%params.branches)/params.branches)*Math.PI*2;
+        let rx = Math.pow(Math.random(), params.rPower) * (Math.random() < 0.5 ? 1 : -1);
+        let ry = Math.pow(Math.random(), params.rPower) * (Math.random() < 0.5 ? 1 : -1);
+        let rz = Math.pow(Math.random(), params.rPower) * (Math.random() < 0.5 ? 1 : -1);
+        pos[i3] = Math.cos(bAngle + sAngle)*r + rx; pos[i3+1] = ry; pos[i3+2] = Math.sin(bAngle + sAngle)*r + rz;
+        let mix = cIn.clone().lerp(cOut, r/params.radius); cols[i3] = mix.r; cols[i3+1] = mix.g; cols[i3+2] = mix.b;
+    }
+    geom.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geom.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+    const points = new THREE.Points(geom, new THREE.PointsMaterial({ size: params.size, sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true })); scene.add(points);
+
+    let gSpeed = 0.05, gLoop = requestAnimationFrame(function tick() {
+        points.rotation.y -= gSpeed * 0.05; points.rotation.z += (gSpeed * 0.01);
+        renderer.render(scene, camera); gLoop = requestAnimationFrame(tick);
+    });
+    setTimeout(() => { gsap.to(camera.position, {z: 1.5, x: 1.5, duration: 3}); gSpeed = 0.8; }, 7000);
+    setTimeout(() => { cancelAnimationFrame(gLoop); showScreen('screen-diary'); initDiary(); }, 12000);
+}
+
+// --- DIARY STAGE ---
+function initDiary() {
+  const book = document.getElementById('diary-book'); book.innerHTML = '';
+  const msgs = ["Romisaa... 🥺", "You are the best part of my day. 🌅", "Every second with you is magic. ✨", "I wish I could hold your hand now. 🤝", "You are my peace and my joy. 🕊️", "Distance can't stop my heart. 🌍", "Turn the last page... 📖", "For the surprise! 🎁"];
+  msgs.forEach((t, i) => { let p = document.createElement('div'); p.className = 'page'; p.style.zIndex = 10 - i; p.innerHTML = `<p>${t}</p>`; p.onclick = (e) => { e.stopPropagation(); p.classList.add('flipped'); playSFX(400, 0.4, 'sine', 0.2); if(i === 7) setTimeout(() => { showScreen('screen-hearts'); initHearts(); }, 2000); }; book.appendChild(p); });
+  let cover = document.createElement('div'); cover.className = 'page cover'; cover.style.zIndex = 20; cover.innerHTML = "<div style='margin-top:60px;'>FOR<br>ROMISAA</div><div style='font-size:30px; margin-top:20px;'>🔓</div>"; cover.onclick = () => { cover.classList.add('flipped'); playSFX(300, 0.5); }; book.appendChild(cover);
+    }
+    // --- HEARTS STAGE (10 Beautiful Words) ---
+function initHearts() {
+    const hCanvas = document.getElementById("heart-canvas"), hStage = new createjs.Stage(hCanvas);
+    hCanvas.width = window.innerWidth; hCanvas.height = window.innerHeight;
+    const cw = hCanvas.width, ch = hCanvas.height;
+    
+    const hContainer = new createjs.Container(); hStage.addChild(hContainer);
+    for (let i = 0; i < 100; i++) {
+        let heart = new createjs.Shape();
+        heart.graphics.beginFill(createjs.Graphics.getHSL(Math.random() * 30 - 45, 100, 50 + Math.random() * 30));
+        heart.graphics.moveTo(0,-12).curveTo(1,-20,8,-20).curveTo(16,-20,16,-10).curveTo(16,0,0,12).curveTo(-16,0,-16,-10).curveTo(-16,-20,-8,-20).curveTo(-1,-20,0,-12);
+        heart.y = -100; hContainer.addChild(heart);
+    }
+
+    let textMsg = "The longer I'm with you,\nthe more I fall in love.\n\n1. Beautiful  2. Brilliant  3. Magical\n4. Perfect  5. Gorgeous  6. Sweet\n7. Mine  8. Queen  9. Soulmate  10. Everything\n\nRomisaa ❤️";
+    let text = new createjs.Text(textMsg, "bold 20px Tahoma", "#ff0055"); text.textAlign = "center"; text.x = cw / 2; text.y = ch / 2 - 100; text.shadow = new createjs.Shadow("#fff", 0, 0, 15);
+    hStage.addChild(text);
+
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    createjs.Ticker.on("tick", (e) => {
+        for (let i = 0; i < hContainer.numChildren; i++) {
+            let heart = hContainer.getChildAt(i);
+            if (heart.y < -50) {
+                heart._x = Math.random() * cw; heart.y = ch * (1 + Math.random()) + 50; heart.perX = (1 + Math.random() * 2) * ch; heart.offX = Math.random() * ch; heart.ampX = heart.perX * 0.1 * (0.15 + Math.random());
+                heart.velY = -Math.random() * 2 - 1; heart.scale = Math.random() * 2 + 1; heart._rotation = Math.random() * 40 - 20; heart.alpha = Math.random() * 0.75 + 0.05; heart.compositeOperation = Math.random() < 0.33 ? "lighter" : "source-over";
+            }
+            let int = (heart.offX + heart.y) / heart.perX * Math.PI * 2; heart.y += heart.velY * heart.scaleX / 2; heart.x = heart._x + Math.cos(int) * heart.ampX; heart.rotation = heart._rotation + Math.sin(int) * 30;
+        } hStage.update(e);
+    });
+    setTimeout(() => { createjs.Ticker.removeAllEventListeners(); showScreen('screen-finale'); initFinale3D(); }, 12000);
+}
+
+// --- TRUE REALISTIC 3D ROBOTS ---
+let fScene, fCam, fRenderer, mainBot, clumsyBot, rajBot;
+function create3DRobot(colorHex, eyeHex) {
+    const group = new THREE.Group();
+    const mat = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.7, roughness: 0.3 });
+    const head = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.2, 1.5), mat); head.position.y = 2.5; group.add(head);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: eyeHex });
+    const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.1), eyeMat); eyeL.position.set(-0.4, 2.6, 0.76); group.add(eyeL);
+    const eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.1), eyeMat); eyeR.position.set(0.4, 2.6, 0.76); group.add(eyeR);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(2, 2.5, 1.5), mat); body.position.y = 0.5; group.add(body);
+    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), mat); armL.position.set(-1.35, 0.5, 0); group.add(armL);
+    const armR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2, 0.5), mat); armR.position.set(1.35, 0.5, 0); group.add(armR);
+    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.8, 16), new THREE.MeshStandardMaterial({color: 0x111111})); wheel.rotation.z = Math.PI / 2; wheel.position.y = -1; group.add(wheel);
+    const light = new THREE.PointLight(eyeHex, 1.5, 5); light.position.set(0, 2.6, 1.5); group.add(light);
+    return group;
+}
+
+function initFinale3D() {
+    fScene = new THREE.Scene();
+    fCam = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 100); fCam.position.set(0, 2, 12);
+    fRenderer = new THREE.WebGLRenderer({ canvas: document.getElementById('finale-canvas'), alpha: true, antialias: true }); fRenderer.setSize(window.innerWidth, window.innerHeight);
+    fScene.add(new THREE.AmbientLight(0x404040, 2)); const dirLight = new THREE.DirectionalLight(0xffffff, 1); dirLight.position.set(5, 10, 7); fScene.add(dirLight);
+
+    mainBot = create3DRobot(0x888888, 0x00f5d4); mainBot.position.set(15, 0, 0); fScene.add(mainBot);
+    clumsyBot = create3DRobot(0xffb703, 0xff0000); clumsyBot.position.set(-3, 15, 0); fScene.add(clumsyBot);
+    rajBot = create3DRobot(0x00b4d8, 0xffffff); rajBot.position.set(0, 15, 0); fScene.add(rajBot);
+
+    function renderFinale() { fRenderer.render(fScene, fCam); if(document.getElementById('screen-finale').style.display !== 'none') requestAnimationFrame(renderFinale); }
+    renderFinale(); startEpicFinale();
+}
+
+function talk(id, txt, dur = 3) { return new Promise(res => { const b = document.getElementById(`bubble-${id}`); b.innerText = txt; gsap.to(b, { opacity: 1, scale: 1, y: -15, duration: 0.3, ease:"back.out(1.2)" }); setTimeout(() => { gsap.to(b, { opacity: 0, scale: 0.5, y: 0, duration: 0.3, onComplete: res }); }, dur * 1000); }); }
+
+async function startEpicFinale() {
+  gsap.to(mainBot.position, { x: 3, duration: 4, ease: "power1.inOut" }); gsap.to('#love-text', { right: '0vw', duration: 4, ease: "power1.inOut" });
+  await new Promise(r => setTimeout(r, 4500));
+  gsap.to(clumsyBot.position, { y: -1, duration: 0.8, ease: "bounce.out" }); playSFX(120, 0.8, 'sine', 0.7);
+  gsap.to(clumsyBot.rotation, { y: 0.2, yoyo: true, repeat: 30, duration: 0.05, delay: 0.8 }); await talk('clumsy', "I'm sorry! I'm sorry! I'm sorry! 😭😱🥶", 3);
+  await talk('main', "You stupid what are you doing?! 😡😤", 2.5);
+  
+  gsap.to(mainBot.position, { x: 2, duration: 0.2, ease: "power2.in", onComplete: () => { 
+      playSFX(800, 0.1, 'square', 0.2); gsap.to(mainBot.rotation, { z: -0.2, duration: 0.1, yoyo: true, repeat: 1 }); gsap.to(clumsyBot.rotation, { z: 0.3, duration: 0.1, yoyo: true, repeat: 1 }); gsap.to(clumsyBot.position, { x: -4, duration: 0.2 }); 
+  }}); await new Promise(r => setTimeout(r, 1000));
+
+  await talk('main', "Go and sit in corner! 👉🧍‍♂️", 2.5);
+  gsap.to(clumsyBot.position, { x: -10, y: -5, duration: 3, ease: "power1.inOut" }); gsap.to(clumsyBot.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 3 }); await new Promise(r => setTimeout(r, 3000));
+  await talk('main', "Romisaa sorry my friend. 😅 Btw how are you? 🥺", 3.5); await talk('main', "I hope you okay... Umm... Wait here! 🚀", 3);
+  
+  playSFX(60, 4.5, 'sawtooth', 0.4); gsap.to(mainBot.position, { y: 15, duration: 4.5, ease: "power2.in" }); await new Promise(r => setTimeout(r, 5000));
+  playSFX(60, 5.5, 'sawtooth', 0.4);
+  gsap.to(rajBot.position, { y: 0, duration: 5.5, ease: "power2.out", onComplete: async () => {
+    await talk('main', "Talk with Romisaa Raj now. 🎤👀", 3);
+    gsap.to(rajBot.rotation, { y: 0.1, duration: 0.08, yoyo: true, repeat: 15 });
+    await talk('raj', "Ro-ro-romisaa... 😳❤️", 3); await talk('raj', "I have so many things to tell you... 🥺✨", 3);
+    await talk('raj', "You are the most beautiful part of my life. 🌸💖", 3.5); await talk('raj', "Every day, I fall more in love with you. 💘🥰", 3.5);
+    await talk('raj', "I want to make you smile forever. 👑💍", 3.5); await talk('raj', "Tap the sky to make a wish... 🌠🌌", 4); startWishingSky();
+  }});
+}
+
+// --- WISHING SKY & SUPERNOVA ---
+let wishes = 0; const promises = ["I will always protect you. 🛡️", "You are my entire universe. 🌌", "My heart belongs to you. 💖", "Distance means nothing. 🗺️", "You are my favorite smile. 😊", "I love you forever. ♾️", "You are my peace. 🕊️", "I am always here. 🫂", "My dream come true. ✨", "I cherish every moment. ⏳", "You make me better. 🌟", "Forever yours. 💌", "My beautiful Queen. 👑", "I miss your laugh. 😂", "You are my home. 🏡", "Unconditionally. 🤝", "My soulmate. 🔮", "Every heartbeat is yours. 💓", "I promise you my all. 💍", "Romisaa & Raj. ❤️"];
+
+function startWishingSky() { document.getElementById('wishing-sky').style.display = 'block'; gsap.to('#wish-prompt', { opacity: 1, duration: 2, yoyo: true, repeat: -1 }); gsap.to('.screen', { opacity: 0, duration: 2 }); }
+
+function createWish(e) { 
+  if (wishes >= 20) return; const sky = document.getElementById('wishing-sky'); 
+  let l = document.createElement('div'); l.className = 'sky-lantern'; l.style.left = (e.clientX - 75) + 'px'; l.style.bottom = '0px'; l.innerText = promises[wishes]; sky.appendChild(l); 
+  playSFX(600 + (wishes * 30), 0.5, 'sine'); wishes++; 
+  if(wishes === 1) document.getElementById('wish-prompt').style.display = 'none'; 
+  if(wishes === 20) setTimeout(triggerSupernova, 6000); 
+}
+
+function triggerSupernova() {
+  gsap.to('#wishing-sky', { opacity: 0, duration: 3 });
+  const uniCanvas = document.getElementById('universe-canvas'); uniCanvas.style.display = 'block'; gsap.to(uniCanvas, { opacity: 1, duration: 2 });
+  uniCanvas.width = window.innerWidth; uniCanvas.height = window.innerHeight; const uCtx = uniCanvas.getContext('2d');
+  let stars = []; for(let i=0; i<300; i++) { stars.push({ x: Math.random() * uniCanvas.width, y: Math.random() * uniCanvas.height, z: Math.random() * 2000 }); }
+  let warpSpeed = 25;
+  function animateWarp() { uCtx.fillStyle = 'rgba(0, 0, 0, 0.4)'; uCtx.fillRect(0, 0, uniCanvas.width, uniCanvas.height); let cx = uniCanvas.width / 2, cy = uniCanvas.height / 2; stars.forEach(s => { s.z -= warpSpeed; if(s.z <= 0) { s.z = 2000; s.x = Math.random() * uniCanvas.width; s.y = Math.random() * uniCanvas.height; } let px = cx + (s.x - cx) * (2000 / s.z), py = cy + (s.y - cy) * (2000 / s.z); let size = (1 - s.z / 2000) * 5; uCtx.fillStyle = '#fff'; uCtx.beginPath(); uCtx.arc(px, py, size, 0, Math.PI * 2); uCtx.fill(); }); if(warpSpeed > 0) requestAnimationFrame(animateWarp); } animateWarp();
+
+  setTimeout(() => { warpSpeed = 0; uCtx.clearRect(0,0,uniCanvas.width, uniCanvas.height);
+    const tCont = document.getElementById('ticket-cont'); tCont.style.display = 'block'; gsap.to(tCont, { scale: 1, duration: 1.5, ease: "back.out(1.2)" }); playSFX(800, 1.5, 'sine', 0.5);
+    const sCan = document.getElementById('scratch-canvas'); sCan.width = tCont.offsetWidth; sCan.height = tCont.offsetHeight; const sCtx = sCan.getContext('2d');
+    sCtx.fillStyle = '#a8a8a8'; sCtx.fillRect(0, 0, sCan.width, sCan.height); sCtx.font = "24px Arial"; sCtx.fillStyle = "#fff"; sCtx.textAlign = "center"; sCtx.fillText("RUB TO REVEAL ✨", sCan.width/2, sCan.height/2);
+    let isDrawing = false;
+    function scratch(e) { if(!isDrawing) return; e.preventDefault(); let rect = sCan.getBoundingClientRect(); let x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left; let y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top; sCtx.globalCompositeOperation = 'destination-out'; sCtx.beginPath(); sCtx.arc(x, y, 40, 0, Math.PI * 2); sCtx.fill(); }
+    sCan.addEventListener('mousedown', () => isDrawing = true); sCan.addEventListener('touchstart', () => isDrawing = true, {passive:false}); sCan.addEventListener('mouseup', () => isDrawing = false); sCan.addEventListener('touchend', () => isDrawing = false); sCan.addEventListener('mousemove', scratch); sCan.addEventListener('touchmove', scratch, {passive:false});
+    showScreen('screen-credits'); const credits = document.getElementById('credits-text'); credits.classList.add('credits-scroll'); credits.innerText = "ROMISAA'S UNIVERSE 🌟\n\nA Digital Masterpiece\n\nLead Developer: RAJ 😎\n\nBuilt with 100% Love 💖\n\nI LOVE YOU FOREVER ❤️";
+  }, 4000);
+}
+</script>
+</body>
+</html>
