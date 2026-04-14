@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Glass Toggle</title>
+  <style>
+    /* ALL YOUR CSS GOES HERE */
+    @import url('https://unpkg.com/normalize.css') layer(normalize);
+
+    @layer normalize, base, demo, glows, transitions, trail;
+
+    :root { --font-size: 48px; }
+
+    @layer trail {
+      :root { --offset: calc(var(--step) * 0.5); }
+      .trail {
+        stroke-dasharray: 10 80; stroke-dashoffset: 10; opacity: 0;
+        transition-property: stroke-dashoffset, opacity;
+        transition-duration: calc(var(--step) * 3), calc(var(--step) * 0.5);
+        transition-delay: var(--offset), calc(var(--offset) + (var(--step) * 2.5));
+        transition-timing-function: var(--ease), linear(0 0%, 0.0039 6.25%, 0.0156 12.5%, 0.0352 18.75%, 0.0625 25%, 0.0977 31.25%, 0.1407 37.5%, 0.1914 43.74%, 0.2499 49.99%, 0.3164 56.25%, 0.3906 62.5%, 0.5625 75%, 0.7656 87.5%, 1 100%);
+      }
+      .toggle[aria-pressed='true'] .trail { transition: stroke-dashoffset 0s; opacity: 1; stroke-dashoffset: -70; }
+      .glow {
+        opacity: 1; transition-property: opacity; transition-duration: 1.25s; transition-delay: var(--offset);
+        transition-timing-function: linear(0 0%, 0.0039 6.25%, 0.0156 12.5%, 0.0352 18.75%, 0.0625 25%, 0.0977 31.25%, 0.1407 37.5%, 0.1914 43.74%, 0.2499 49.99%, 0.3164 56.25%, 0.3906 62.5%, 0.5625 75%, 0.7656 87.5%, 1 100%);
+      }
+      .toggle[aria-pressed='true'] .glow { opacity: 0; transition-property: opacity; transition-duration: var(--step); transition-delay: 0s; transition-timing-function: var(--ease); }
+    }
+
+    @layer glows {
+      .face-plate, .face-glowdrop { position: absolute; inset: 0; border-radius: inherit; }
+      .face-glowdrop::after, .face-glowdrop::before { content: ''; height: 50%; aspect-ratio: 1; background: #fff; filter: blur(6px); position: absolute; z-index: -1; border-radius: 50%; }
+      .face-glowdrop::before { left: 4%; width: 56%; translate: 0 -25%; }
+      .face-glowdrop::after { bottom: 0; right: 12%; width: 34%; translate: 0 20%; }
+      .face-glows { position: absolute; inset: -0.075em; opacity: 0; border-radius: inherit; mix-blend-mode: plus-lighter; filter: blur(8px); z-index: 20; mask: conic-gradient(from 280deg, #0000, #fff 20deg 45deg, #0000 95deg), conic-gradient(from 110deg, #0000, #fff 20deg, #0000 95deg); }
+      .face-glows div { position: absolute; inset: 0; border-radius: inherit; filter: blur(4px); border: 0.1em solid white; }
+    }
+
+    @layer transitions {
+      :root {
+        --step: 0.5s;
+        --ease: linear(0 0%, 0.2342 12.49%, 0.4374 24.99%, 0.6093 37.49%, 0.6835 43.74%, 0.7499 49.99%, 0.8086 56.25%, 0.8593 62.5%, 0.9023 68.75%, 0.9375 75%, 0.9648 81.25%, 0.9844 87.5%, 0.9961 93.75%, 1 100%);
+      }
+      body { transition-property: background-color, color; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .socket { transition-property: background-color, box-shadow; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .face { transition-property: scale; transition-duration: var(--step); transition-timing-function: var(--ease); scale: 1; }
+      .outline { transition-property: stroke; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .inner-bg { fill: black; transition-property: fill; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .face-shadow::after, .face-shadow::before { transition-property: opacity, translate, filter, scale; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .face-shadow::after { scale: 0.5; }
+      .face-plate { transition-property: background-color; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .face-glowdrop { scale: 0; transition-property: scale; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .socket-shadow, .face-glows, .face-shine { transition-property: opacity; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      button:active .socket { box-shadow: -0.045em 0.1em 0.2em -0.15em white;}
+      button:active .face { scale: 0.99; }
+      .glow { opacity: 0; transition-property: opacity; transition-duration: var(--step); transition-timing-function: var(--ease); }
+      .toggle[aria-pressed='true'] {
+        .face { scale: 1.12; }
+        .outline { stroke: hsl(0 0% 30%); }
+        .inner-bg { fill: hsl(0 0% 20%); }
+        .socket { box-shadow: -0.025em 0.08em 0.2em -0.1em white; }
+        .glow { opacity: 0; }
+        .face-glowdrop { scale: 1; }
+        &::before { scale: 2; opacity: 0; }
+        .face-shadow::before { translate: -15% 55%; filter: blur(1em); opacity: 0.35; }
+        .face-shadow::after { filter: blur(0.5em); scale: 1; }
+        .socket-shadow, .face-glows, .face-shine { opacity: 1; }
+      }
+    }
+
+    @layer demo {
+      main { font-size: var(--font-size); scale: 1; }
+      :root { --font-size: 64px; --bg-light: hsl(235 5% 85%); --bg-dark: hsl(220 27% 6%); --button-light: hsl(223 4% 73%); --button-dark: hsl(220 27% 6%); }
+      body { background: light-dark(var(--bg-light), var(--bg-dark)); overflow: hidden; }
+      button { background: #0000; font-size: var(--font-size); height: 3em; padding: 0; border-radius: 3em; border: 0; aspect-ratio: 1.8 / 1; position: relative; cursor: pointer; }
+      button::after { content: ''; }
+      button :is(.socket, .face) { position: absolute; border-radius: 3em; }
+      .toggle::before { pointer-events: none; }
+      .socket { box-shadow: -0.05em 0.1em 0.2em -0.2em white; background: light-dark(hsl(0 0% 90%), hsl(0 0% 0%)); position: relative; inset: 0; }
+      .socket-shadow { position: absolute; inset: 0 0em; opacity: 0; border-radius: inherit; box-shadow: 0em 0.075em 0.1em 0em white; }
+      .face { inset: 0.15em; }
+      .toggle::before { content: ''; width: 150vmax; height: 200vmax; aspect-ratio: 1; border-radius: 0%; background: radial-gradient(hsl(0 0% 100% / 0.25), hsl(0 0% 0% / 1) 35%); position: absolute; translate: -50% -65%; left: 50%; top: 50%; z-index: -1; opacity: 0.35; }
+      .face-shadow, .face-shadow::after, .face-shadow::before { position: absolute; inset: 0; border-radius: inherit; }
+      .face-shadow::after, .face-shadow::before { content: ''; }
+      .face-shadow::before { background: black; }
+      .face-shadow::after { background: white; }
+      .face-plate { box-shadow: -0.05em 0.1em 0.2em -0.2em white inset; background: conic-gradient(from 45deg, #0000, hsl(0 0% 100% / 0.05)), light-dark(var(--button-light), var(--button-dark)); }
+      .face-shine { position: absolute; inset: 0; opacity: 0; border-radius: 3em; }
+      .face-shine-shadow { position: absolute; inset: 0; border-radius: inherit; mask: conic-gradient(from 0deg, #fff 90deg, #0000 110deg 200deg, #fff 215deg 280deg, #0000 315deg); box-shadow: 0.075em 0 0.025em -0.025em hsl(0 0% 0% / 0.5) inset, -0.075em -0.05em 0.025em -0.025em hsl(0 0% 0% / 0.5) inset; }
+      .face-shine::before { content: ''; position: absolute; inset: 0.05em; border-radius: 3em; box-shadow: 0 -0.05em 0.025em -0.025em hsl(0 0% 50% / 0.5) inset, -0.025em 0.05em 0.025em -0.025em hsl(0 0% 100% / 0.5) inset; }
+      .face-shine::after { content: ''; position: absolute; inset: 0; background: conic-gradient(from 45deg, #0000, hsl(0 0% 100% / 0.25)); border-radius: 3em; }
+      .face svg { --glow: hsl(182 90% 92%); width: 25%; position: absolute; top: 50%; left: 50%; translate: -52% -48%; overflow: visible !important; }
+      .face svg path { transform-box: fill-box; transform-origin: center center; }
+      .glow { z-index: 3; filter: drop-shadow(0 0 0.2em var(--glow)); will-change: opacity; }
+      .trail-holder { z-index: 2; filter: blur(10px); .trail { stroke-width: 4; } }
+      .trail { stroke-dashoffset: 0; }
+      .inner-face { fill: hsl(230 5% 80%); }
+      .glow-path { fill: var(--glow); stroke: var(--glow); opacity: 1; stroke-width: 0px; }
+    }
+
+    @layer base {
+      html { color-scheme: light dark; }
+      [data-theme='light'] { --line: hsl(0 0% 10% / 0.3); color-scheme: light only; }
+      [data-theme='dark'] { --line: hsl(0 0% 100% / 0.3); color-scheme: dark only; }
+      *, *:after, *:before { box-sizing: border-box; }
+      body { display: grid; place-items: center; min-height: 100vh; font-family: system-ui; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <main>
+    <button class="toggle" aria-pressed="false">
+      <div class="socket">
+        <div class="socket-shadow"></div>
+      </div>
+      <div class="face">
+        <div class="face-shadow"></div>
+        <div class="face-plate"></div>
+        <div class="face-glows"><div></div></div>
+        <div class="face-shine"><div class="face-shine-shadow"></div></div>
+        <div class="face-glowdrop"></div>
+        <svg viewBox="0 0 100 100">
+          <circle class="inner-bg outline" cx="50" cy="50" r="40" stroke="white" stroke-width="4" />
+          <path class="trail" d="M 50 10 A 40 40 0 1 1 49.9 10" stroke="cyan" stroke-width="8" fill="none" />
+          <circle class="glow" cx="50" cy="50" r="20" fill="cyan" />
+        </svg>
+      </div>
+    </button>
+  </main>
+
+  <script type="module">
+    // YOUR JAVASCRIPT
+    import { Pane } from 'https://cdn.skypack.dev/tweakpane@4.0.4';
+
+    const config = { theme: 'dark' };
+    const ctrl = new Pane({ title: 'Config', expanded: true });
+
+    const update = () => { document.documentElement.dataset.theme = config.theme; };
+    const sync = event => { update(); };
+
+    const toggle = document.querySelector('.toggle');
+
+    ctrl.addBinding(config, 'theme', {
+      label: 'Theme',
+      options: { System: 'system', Light: 'light', Dark: 'dark' }
+    }).on('change', () => {
+      toggle.setAttribute('aria-pressed', config.theme === 'light');
+    });
+
+    ctrl.on('change', sync);
+    update();
+
+    const handleToggle = () => {
+      const light = !!toggle.matches('[aria-pressed="false"]');
+      toggle.setAttribute('aria-pressed', light);
+      config.theme = light ? 'light' : 'dark';
+      ctrl.refresh();
+    };
+    toggle.addEventListener('click', handleToggle);
+  </script>
+
+</body>
+  </html>
+  
