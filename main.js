@@ -33,10 +33,10 @@ const loader = new GLTFLoader();
 loader.load('robot.glb', function (gltf) {
     robot = gltf.scene;
     
-    // Scale and position the robot (adjust these numbers if your robot is too big/small)
-    robot.scale.set(1, 1, 1);
-    robot.position.set(0, -1, 0); 
-    scene.add(robot);
+
+    // Center the robot and make it a safe size
+    robot.scale.set(0.5, 0.5, 0.5); // Try making it half size
+    robot.position.set(0, 0, -2); // Push it directly in front of the camera
 
     // Play the first animation found in the file
     if (gltf.animations && gltf.animations.length > 0) {
