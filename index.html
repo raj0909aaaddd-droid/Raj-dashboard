@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Novel Test</title>
+    <style>
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* Prevents scrolling entirely */
+            user-select: none; /* Prevents accidental text highlighting when clicking */
+        }
+
+        /* The Main Stage */
+        #stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2000&auto=format&fit=crop'); /* Placeholder Background */
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* The Character Sprite */
+        #character {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 85vh; /* Makes the character stand nicely on screen */
+            /* Placeholder: A transparent PNG silhouette. Swap this with your 3D render! */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/4/4a/Ink_silhouette.png'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom center;
+            width: 400px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* The Dialogue UI */
+        #ui-layer {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            z-index: 10;
+        }
+
+        /* The Nameplate */
+        #namebox {
+            background: rgba(20, 20, 20, 0.9);
+            color: #fff;
+            display: inline-block;
+            padding: 8px 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-bottom: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* The Main Text Area */
+        #dialogue-box {
+            background: rgba(20, 20, 20, 0.85);
+            color: #f0f0f0;
+            padding: 30px;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            min-height: 150px;
+            border-radius: 0 10px 10px 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            cursor: pointer; /* Indicates it can be clicked */
+        }
+
+        /* Blinking cursor to show it's waiting for a click */
+        #click-indicator {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: #fff;
+            animation: blink 1s infinite;
+            display: none; /* Hidden while typing */
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="stage">
+        <div id="character"></div>
+
+        <div id="ui-layer">
+            <div id="namebox">Raj</div>
+            <div id="dialogue-box">
+                <span id="text-target"></span>
+                <span id="click-indicator">▼</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- THE SCRIPT ---
+        // You can write the entire story in this array!
+        const script = [
+            { speaker: "Raj", text: "Hey, Romisaa. Welcome to the new format." },
+            { speaker: "Raj", text: "Instead of scrolling, you just tap the screen to continue." },
+            { speaker: "Romisaa", text: "Oh, this looks exactly like a Japanese visual novel!" },
+            { speaker: "Raj", text: "Exactly. It lets me put those high-quality 3D renders right in the center." },
+            { speaker: "Raj", text: "I can even change the background behind me whenever the scene shifts." },
+            { speaker: "Raj", text: "What do you think of this style?" }
+        ];
+
+        let currentLineIndex = 0;
+        let isTyping = false;
+        
+        const namebox = document.getElementById('namebox');
+        const textTarget = document.getElementById('text-target');
+        const clickIndicator = document.getElementById('click-indicator');
+        const stage = document.getElementById('stage');
+
+        // --- TYPEWRITER EFFECT LOGIC ---
+        let typingTimeout;
+
+        function typeLine() {
+            if (currentLineIndex >= script.length) return; // End of story
+            
+            isTyping = true;
+            clickIndicator.style.display = 'none'; // Hide the arrow
+            textTarget.innerHTML = ''; // Clear old text
+            
+            const currentSpeaker = script[currentLineIndex].speaker;
+            const currentText = script[currentLineIndex].text;
+            
+            namebox.innerText = currentSpeaker;
+
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < currentText.length) {
+                    textTarget.innerHTML += currentText.charAt(charIndex);
+                    charIndex++;
+                    typingTimeout = setTimeout(typeChar, 35); // Speed of typing (lower is faster)
+                } else {
+                    // Finished typing the line
+                    isTyping = false;
+                    clickIndicator.style.display = 'block'; // Show the arrow to prompt a click
+                }
+            }
+            
+            typeChar();
+        }
+
+        // --- CLICK/TAP LOGIC ---
+        stage.addEventListener('click', () => {
+            if (isTyping) {
+                // If they click while it's typing, force it to finish instantly
+                clearTimeout(typingTimeout);
+                textTarget.innerHTML = script[currentLineIndex].text;
+                isTyping = false;
+                clickIndicator.style.display = 'block';
+            } else {
+                // Move to the next line
+                currentLineIndex++;
+                if (currentLineIndex < script.length) {
+                    typeLine();
+                } else {
+                    // The script is over
+                    textTarget.innerHTML = "<em>End of Chapter.</em>";
+                    clickIndicator.style.display = 'none';
+                    namebox.style.display = 'none';
+                }
+            }
+        });
+
+        // Start the first line
+        typeLine();
+    </script>
+
+</body>
+</html>
