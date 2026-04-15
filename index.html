@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 1: The Black Cloud, The Red Fire</title>
+    
+    <style>
+        /* =========================================
+           BASE STYLING & COLORS
+           ========================================= */
+        :root {
+            --gold: #d4af37;
+            --dark-bg: #050505;
+            --blood-red: #8a0303;
+            --text-light: #f0f0f0;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Times New Roman', serif;
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           CHERRY BLOSSOM CANVAS
+           ========================================= */
+        #blossom-canvas {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            pointer-events: none; 
+            z-index: 5;
+        }
+
+        /* =========================================
+           3D PARALLAX STORY PANELS
+           ========================================= */
+        .panel {
+            position: relative;
+            width: 100%;
+            min-height: 150vh; 
+            padding-bottom: 20vh;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Specific Panel Backgrounds */
+        #bg-heaven { 
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1532704868953-d85f24176d73?q=80&w=2000'); 
+        }
+        #bg-forest { 
+            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1542272201-b1ca555f8505?q=80&w=2000'); 
+        }
+        #bg-fire { 
+            background-image: linear-gradient(rgba(138,3,3,0.4), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?q=80&w=2000'); 
+        }
+        #bg-gold { 
+            background-image: linear-gradient(rgba(212,175,55,0.2), rgba(0,0,0,0.95)), url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=2000'); 
+        }
+        #bg-temple { 
+            background-color: #000; 
+            min-height: 80vh; 
+            justify-content: center; 
+        }
+
+        /* =========================================
+           TEXT AND DIALOGUE BOXES
+           ========================================= */
+        .dialogue-wrap {
+            width: 85%; 
+            max-width: 650px;
+            margin: 20vh auto 0 auto;
+            opacity: 0; 
+            transform: translateY(40px);
+            transition: all 1s ease-out;
+            position: relative; 
+            z-index: 10;
+        }
+
+        .name-tag {
+            color: var(--gold); 
+            font-size: 1rem; 
+            text-transform: uppercase;
+            letter-spacing: 4px; 
+            margin-bottom: 5px; 
+            font-weight: bold;
+        }
+
+        .text-box {
+            font-size: 1.4rem; 
+            line-height: 1.7; 
+            color: var(--text-light);
+            background: rgba(10, 10, 10, 0.75); 
+            padding: 20px;
+            border-left: 3px solid var(--gold); 
+            border-radius: 0 10px 10px 0;
+            backdrop-filter: blur(5px);
+        }
+
+        /* =========================================
+           MANGA-STYLE VISUAL SOUND EFFECTS
+           ========================================= */
+        .sfx-text {
+            font-size: 2.5rem; 
+            font-weight: 900; 
+            color: var(--blood-red);
+            font-style: italic; 
+            text-transform: uppercase; 
+            letter-spacing: 5px;
+            text-align: center; 
+            margin: 15vh auto 0 auto;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 20px rgba(138,3,3,0.9);
+            opacity: 0; 
+            transform: scale(0.5) rotate(-5deg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10; 
+            position: relative;
+        }
+
+        /* Animation class added by JavaScript */
+        .visible { 
+            opacity: 1 !important; 
+            transform: translateY(0) scale(1) rotate(0deg) !important; 
+        }
+
+        /* =========================================
+           FINAL CINEMATIC VIDEO OUTRO
+           ========================================= */
+        #video-outro {
+            width: 100%; 
+            height: 100vh; 
+            background: black;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            flex-direction: column; 
+            position: relative; 
+            z-index: 20;
+        }
+
+        .video-placeholder { 
+            width: 100%; 
+            max-width: 1200px; 
+            background: #000; 
+        }
+
+        video { 
+            width: 100%; 
+            height: auto; 
+            display: block; 
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="blossom-canvas"></canvas>
+
+    <div class="panel" id="bg-heaven">
+        
+        <div class="sfx-text">BA-ROOOOOOM!</div>
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">The Narrator</div>
+            <div class="text-box">One hundred thousand celestial soldiers blocked out the light. Erlang Shen lunged, his lance aimed perfectly at the monkey's heart.</div>
+        </div>
+        
+        <div class="sfx-text">KRA-KA-LANG!</div>
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">Wukong parried flawlessly, but the golden headband tightened. His divine power shattered, scattering across the world as six Relics.</div>
+        </div>
+
+    </div>
+
+    <div class="panel" id="bg-forest">
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">The Destined One</div>
+            <div class="text-box">You awaken deep in the Black Wind Mountain. You travel through the dense, rotting Bamboo Grove. Defeating lesser wolf demons, you find an ancient shrine.</div>
+        </div>
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">Wise Old Man (Yuan Shoucheng)</div>
+            <div class="text-box">An eccentric elder appears, pointing to the old gourd on your belt. "Ah, a Destined One! To fight Yaoguai, you cannot just hit them. You must absorb their essence."</div>
+        </div>
+        
+        <div class="sfx-text">SHHHING!</div>
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">He taps your gourd. It glows with golden magic. "Now, when a mighty beast falls, drink its spirit. Its power will become yours."</div>
+        </div>
+
+    </div>
+
+    <div class="panel" id="bg-fire">
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">The Narrator</div>
+            <div class="text-box">You travel further, finding a clearing engulfed in flames. Guangzhi, the Fire Wolf, spins his blazing twin-blades. After a brutal fight, you strike him down and absorb his spirit into your newly upgraded gourd.</div>
+        </div>
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">Behind his arena, you find it. A massive, ancient bronze bell hanging from a dead tree.</div>
+        </div>
+        
+        <div class="sfx-text">DOOOOOONG.</div>
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">The Cutscene Vision</div>
+            <div class="text-box">The sound warps reality. You see a vision of the past: A giant wolf hanging from a noose, a temple burning, and the tragic screams of monks. The mystery deepens.</div>
+        </div>
+
+    </div>
+
+    <div class="panel" id="bg-forest">
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">You trek deeper into the Snake Trail. The earth shakes. The Wandering Wight—a corrupted monk with a massive bronze head—blocks the path. You dodge his earth-shattering palms, strike him down, and absorb his iron-hard essence.</div>
+        </div>
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">In the cave behind him, you find the second bell. You strike it with your staff.</div>
+        </div>
+        
+        <div class="sfx-text">DOOOOOONG.</div>
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">The Cutscene Vision</div>
+            <div class="text-box">Another flash. You see a golden cassock glowing in the dark, surrounded by greedy, blood-soaked hands. Someone murdered for that robe.</div>
+        </div>
+
+    </div>
+
+    <div class="panel" id="bg-forest">
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">At the Guanyin Temple ruins, you slay the giant White Wolf, Lingxuzi. Behind the temple's main altar, hidden in the shadows, hangs the final ancient bell.</div>
+        </div>
+        
+        <div class="sfx-text">DOOOOOONG.</div>
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">The Narrator</div>
+            <div class="text-box">Three bells rung. The sky turns completely white. The ruins around you rebuild themselves in reverse. You are pulled through a rift in time, arriving in a secret area: The Ancient Guanyin Temple.</div>
+        </div>
+
+    </div>
+
+    <div class="panel" id="bg-gold">
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">The Narrator</div>
+            <div class="text-box">The secret temple is pristine, but the floor is overflowing with cursed gold. In the center floats a grotesque, giant monk with an impossibly bloated head, draped in golden robes. Elder Jinchi. The monk whose greed burned the temple centuries ago.</div>
+        </div>
+        
+        <div class="dialogue-wrap">
+            <div class="name-tag">Elder Jinchi</div>
+            <div class="text-box">"THE CASSOCK! I BURNED THEM ALL FOR THE CASSOCK! IT IS MINE!"</div>
+        </div>
+        
+        <div class="sfx-text">WAAAAASHHH!</div>
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">He summons waves of explosive zombie monks. You transform into the Fire Wolf, slicing through the undead horde. You reach Jinchi, shattering his golden shield and putting his greedy, cursed soul to rest forever. You claim the Fireproof Mantle as your reward.</div>
+        </div>
+
+    </div>
+
+    <div class="panel" id="bg-fire">
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">You return to the present and scale to the peak of Black Wind Mountain. The Black Bear Guai awaits. "You killed my monks. You broke my gates!" he roars, transforming into a tornado of black wind.</div>
+        </div>
+        
+        <div class="dialogue-wrap">
+            <div class="text-box">But with the Fireproof Mantle protecting you, his flames cannot burn your fur. You cast Immobilize, bringing the Jingu Bang down on his skull with the force of a falling star. The King falls.</div>
+        </div>
+
+    </div>
+
+    <div class="panel" id="bg-temple">
+        
+        <div class="dialogue-wrap" style="text-align: center; margin-bottom: 10vh;">
+            <div style="font-size: 2.5rem; color: var(--gold); letter-spacing: 8px; text-transform: uppercase;">Chapter 1 Complete</div>
+            <div style="color: #666; font-style: italic; font-size: 1.2rem; margin-top: 15px;">The Bells are silenced. The First Relic is Reclaimed.</div>
+        </div>
+
+    </div>
+
+    <div id="video-outro">
+        <div class="video-placeholder">
+            <video id="finale-video" playsinline controls>
+                <source src="your-cinematic-video.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <script>
+        // 1. FADE IN TEXT AND VISUAL SFX ON SCROLL
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Add the 'visible' class to trigger the CSS animation
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.3 }); // Element must be 30% visible before triggering
+
+        // Attach the observer to all text boxes, sfx text, and background panels
+        document.querySelectorAll('.dialogue-wrap, .sfx-text, .panel').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 2. AUTO-PLAY THE FINAL VIDEO WHEN REACHED
+        const video = document.getElementById('finale-video');
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    video.muted = false;
+                    video.play().catch(() => { 
+                        // Fallback if browser blocks sound auto-play
+                        video.muted = true; 
+                        video.play(); 
+                    });
+                } else {
+                    video.pause(); 
+                }
+            });
+        }, { threshold: 0.5 }); 
+        
+        videoObserver.observe(document.getElementById('video-outro'));
+
+        // 3. CHERRY BLOSSOM PARTICLE ENGINE
+        const canvas = document.getElementById('blossom-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particlesArray = [];
+        
+        // Create 40 floating particles
+        for (let i = 0; i < 40; i++) {
+            particlesArray.push({
+                x: Math.random() * canvas.width, 
+                y: Math.random() * canvas.height,
+                size: Math.random() * 3 + 1, 
+                speedX: Math.random() * 1 - 0.5, 
+                speedY: Math.random() * 1.5 + 0.5,
+                color: `rgba(255, 183, 197, ${Math.random() * 0.7 + 0.3})`
+            });
+        }
+
+        // Animate the particles
+        function animateBlossoms() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particlesArray.forEach(p => {
+                p.x += p.speedX; 
+                p.y += p.speedY;
+                
+                // Reset particle to top if it falls off the bottom
+                if (p.y > canvas.height) { 
+                    p.y = 0 - p.size; 
+                    p.x = Math.random() * canvas.width; 
+                }
+                
+                // Draw the particle
+                ctx.fillStyle = p.color; 
+                ctx.beginPath(); 
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); 
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(animateBlossoms);
+        }
+        
+        animateBlossoms();
+
+        // Ensure canvas resizes if the phone orientation changes
+        window.addEventListener('resize', () => { 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+        });
+    </script>
+</body>
+  </html>
+  
